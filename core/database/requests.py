@@ -1,4 +1,4 @@
-from core.database.models import BodyPart, async_session, Exercise
+from core.database.models import BodyPart, async_session, Exercise, Photo
 from sqlalchemy import select, update, insert, delete
 
 
@@ -30,3 +30,17 @@ async def get_this_exercise(exercise_id):
         exercise = await session.scalar(select(Exercise).where(Exercise.id == exercise_id))
         return exercise
 
+
+async def set_photo(file_path, exercise_id):
+    async with async_session() as session:
+        session.add(Photo(file_path=file_path, exercise_id=exercise_id))
+        await session.commit()
+        return Photo(file_path=file_path, exercise_id=exercise_id)
+
+
+async def get_photos(exercise_id):
+    async with async_session() as session:
+        photos = await session.scalars(select(Photo).where(Photo.exercise_id == exercise_id))
+        if photos:
+            return photos
+        else: return None

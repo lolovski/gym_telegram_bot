@@ -33,8 +33,11 @@ async def get_exercises_keyboard(body_part_id):
     exercises_list = await get_exercises_list(body_part_id)
     for i in exercises_list:
         exercises_keyboard.add(InlineKeyboardButton(text=f'{i.name}', callback_data=f'exercise {i.id}'))
-    exercises_keyboard.add(InlineKeyboardButton(text='cancel', callback_data=BackCbData(action=BackActions.this_exercise).pack()))
+    exercises_keyboard.add(InlineKeyboardButton(text='cancel', callback_data='exercise cancel'))
     return exercises_keyboard.adjust(1).as_markup()
 
+cancel_exercises_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='cancel', callback_data='this_exercise cancel')]
+])
 
 

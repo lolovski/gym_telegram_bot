@@ -27,6 +27,13 @@ class Exercise(Base):
     title: Mapped[str] = mapped_column(String(512))
 
 
+class Photo(Base):
+        __tablename__ = 'photos'
+        photo_id: Mapped[int] = mapped_column(primary_key=True)
+        file_path: Mapped[str] = mapped_column(String(1024))
+        exercise_id: Mapped[int] = mapped_column(ForeignKey('exercises.id'))
+
+
 async def async_main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

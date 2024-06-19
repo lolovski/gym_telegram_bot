@@ -1,17 +1,17 @@
 from aiogram import types, Bot, Dispatcher, F, Router
 from aiogram.filters import CommandStart, Command
 import asyncio
-from core.database.requests import get_body_parts_list, get_exercises_list, get_this_exercise
+from core.database.requests import get_body_parts_list, get_exercises_list, get_this_exercise, get_photos
 from aiogram.fsm import state
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove, FSInputFile
 
 from ..utils.commands import set_commands
 from .. import filters
 
 import requests
-from ..keyboards.inline import get_body_part_keyboard, get_exercises_keyboard, BackCbData, BackActions
+from ..keyboards.inline import get_body_part_keyboard, get_exercises_keyboard, BackCbData, BackActions, cancel_exercises_keyboard
 from aiogram.fsm.state import State, StatesGroup
 
 
@@ -24,35 +24,46 @@ class ExercisesForm(StatesGroup):
 
 
 @router.message(Command('exercises'))
-@router.message((F.text == 'Упражнения') | (F.data.startswith == 'back'))
-@router.message(BackCbData.filter(F.action == BackActions.exercises))
+@router.message((F.text == 'Упражнения') or (F.data.startswith('cancel')))
 async def body_part_info(message: types.Message, bot: Bot, state: FSMContext):
     await message.answer(text='Группы мышц', reply_markup=await get_body_part_keyboard())
-    await state.set_state(ExercisesForm.body_part)
 
 
-@router.callback_query(ExercisesForm.body_part)
+@router.callback_query(F.data.startswith('body_part'))
 @router.callback_query(BackCbData.filter(F.action == BackActions.body_part))
 async def exercises_info(call: CallbackQuery, bot: Bot, state: FSMContext):
+    await state.set_state(ExercisesForm.body_part)
     body_part_id = call.data.split(' ')[1]
+    await state.update_data(body_part=body_part_id)
     await call.message.answer('Упражнения', reply_markup=await get_exercises_keyboard(body_part_id))
-    await state.set_state(ExercisesForm.exercises)
 
 
-@router.message(F.text.casefold() == 'cancel')
-async def cancel(message: Message, state: FSMContext):
-    current_state = await state.get_data()
-    if current_state is None:
-        return
-    await state.clear()
-    await message.answer('Вы вышли в главное меню', reply_markup=ReplyKeyboardRemove())
-
-
-
-@router.callback_query(ExercisesForm.exercises)
-@router.callback_query(BackCbData.filter(F.action == BackActions.this_exercise))
+@router.callback_query(F.data.startswith('exercise'))
 async def this_exercise(call: CallbackQuery, bot: Bot, state: FSMContext):
-    this_exercise_id = call.data.split(' ')[1]
-    this_exercise = await get_this_exercise(this_exercise_id)
-    await call.message.answer(f'{this_exercise.title}')
 
+    if call.data.split(' ')[1] == 'cancel':
+        await state.clear()
+        await call.answer()
+        await call.message.answer(text='Группы мышц', reply_markup=await get_body_part_keyboard())
+    else:
+
+        await state.set_state(ExercisesForm.exercises)
+
+        this_exercise_id = call.data.split(' ')[1]
+        await state.update_data(exercises=this_exercise_id)
+        this_exercise = await get_this_exercise(this_exercise_id)
+        await call.message.answer(f'{this_exercise.text}', reply_markup=cancel_exercises_keyboard)
+        photo_record = await get_photos(this_exercise_id)
+        if photo_record:
+            for photo in photo_record:
+                photo_file = FSInputFile(photo.file_path)
+                await call.message.answer_photo(photo_file)
+
+
+@router.callback_query(F.data.startswith('this_exercise'))
+async def this_exercise_control(call: CallbackQuery, bot: Bot, state: FSMContext):
+    if call.data.split(' ')[1] == 'cancel':
+        context = await state.get_data()
+        await state.set_state(ExercisesForm.exercises)
+        await call.message.answer('Упражнения', reply_markup=await get_exercises_keyboard(context['body_part']))
+        await state.update_data(exercises=None)
