@@ -52,12 +52,22 @@ async def this_exercise(call: CallbackQuery, bot: Bot, state: FSMContext):
         this_exercise_id = call.data.split(' ')[1]
         await state.update_data(exercises=this_exercise_id)
         this_exercise = await get_this_exercise(this_exercise_id)
-        await call.message.answer(f'{this_exercise.text}', reply_markup=cancel_exercises_keyboard)
+        text = this_exercise.text.split('\n\n')
+        print(text)
         photo_record = await get_photos(this_exercise_id)
-        if photo_record:
+        photo_record = sorted(photo_record.all(), key=lambda x: x.paragraph, reverse=False)
+        print(len(text))
+        for photo in photo_record:
+            print(photo.paragraph)
+        for i in range(len(text)):
             for photo in photo_record:
-                photo_file = FSInputFile(photo.file_path)
-                await call.message.answer_photo(photo_file)
+                if photo.paragraph == i:
+                    photo_file = FSInputFile(photo.file_path)
+                    await call.message.answer_photo(photo_file)
+            await call.message.answer(text=text[i])
+        await call.message.answer(reply_markup=cancel_exercises_keyboard, text='Вернуться назад')
+        await call.answer()
+        await state.set_state(ExercisesForm.exercises)
 
 
 @router.callback_query(F.data.startswith('this_exercise'))

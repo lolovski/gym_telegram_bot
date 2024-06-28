@@ -22,21 +22,6 @@ class AddPhotosForm(StatesGroup):
    photos = State()
 
 
-@router.message(Command('add_photo'))
-async def add_photo(message: types.Message, bot: Bot, state: FSMContext):
-    await state.set_state(AddPhotosForm.photos)
-
-
-@router.message(AddPhotosForm.photos)
-async def add_photos(message: types.Message, bot: Bot):
-    await message.answer('!')
-    photo = message.photo[-1]
-    file_info = await bot.get_file(photo.file_id)
-    file_path = os.path.join(PHOTOS_DIR, file_info.file_unique_id + '.jpg')
-    await bot.download(photo, file_path)
-    new_photo = await set_photo(file_path=file_path, exercise_id=1)
-
-
 @router.message(Command(commands=['get_photo']))
 async def send_photo(message: types.Message):
     user_id = message.from_user.id

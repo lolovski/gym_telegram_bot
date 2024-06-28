@@ -31,11 +31,11 @@ async def get_this_exercise(exercise_id):
         return exercise
 
 
-async def set_photo(file_path, exercise_id):
+async def set_photo(file_path, exercise_id, paragraph):
     async with async_session() as session:
-        session.add(Photo(file_path=file_path, exercise_id=exercise_id))
+        session.add(Photo(file_path=file_path, exercise_id=exercise_id, paragraph=paragraph))
         await session.commit()
-        return Photo(file_path=file_path, exercise_id=exercise_id)
+        return Photo(file_path=file_path, exercise_id=exercise_id, paragraph=paragraph)
 
 
 async def get_photos(exercise_id):
@@ -44,3 +44,16 @@ async def get_photos(exercise_id):
         if photos:
             return photos
         else: return None
+
+
+async def set_exercise(body_part, name, text, title):
+    async with async_session() as session:
+        session.add(Exercise(body_part=body_part, name=name, text=text, title=title))
+        await session.commit()
+        return Exercise(body_part=body_part, name=name, text=text, title=title)
+
+
+async def get_last_exercise():
+    async with async_session() as session:
+        last_exercise = await session.scalars(select(Exercise))
+        return last_exercise.all()[-1]

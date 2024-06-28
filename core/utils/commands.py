@@ -9,20 +9,12 @@ async def set_commands(bot: Bot):
             description="Начало работы"
         ),
         BotCommand(
-            command="help",
-            description="Помощь"
+            command="add_exercise",
+            description="Добавить упражнение"
         ),
         BotCommand(
-            command="registration",
-            description="Регистрация в боте"
-        ),
-        BotCommand(
-            command="journal",
-            description="Перейти в журнал"
-        ),
-        BotCommand(
-            command="homework",
-            description="Домашнее задание",
+            command="add_photo",
+            description="Добавить фото"
         )
     ]
     await bot.set_my_commands(commands, scope=BotCommandScopeDefault())
