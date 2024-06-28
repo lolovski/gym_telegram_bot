@@ -15,7 +15,7 @@ dot = load_dotenv('.env')
 API_TOKEN = os.getenv('TOKEN_API')
 bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 WEBHOOK_HOST = "https://gymbot.alwaysdata.net"
-WEBHOOK_PATH = "gym_telegram_bot"
+WEBHOOK_PATH = "/gym_telegram_bot/"
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 WEBAPP_HOST = '::'
 WEBAPP_PORT = 8350
