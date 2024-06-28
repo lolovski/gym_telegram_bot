@@ -36,9 +36,6 @@ async def main() -> None:
     from add_photos import router
     dp.include_router(router)
 
-    from core.handlers.AI_assistant import router
-    dp.include_router(router)
-
     from core.handlers.db_add_info import router
     dp.include_router(router)
 
