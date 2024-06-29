@@ -53,12 +53,8 @@ async def this_exercise(call: CallbackQuery, bot: Bot, state: FSMContext):
         await state.update_data(exercises=this_exercise_id)
         this_exercise = await get_this_exercise(this_exercise_id)
         text = this_exercise.text.split('\n\n')
-        print(text)
         photo_record = await get_photos(this_exercise_id)
         photo_record = sorted(photo_record.all(), key=lambda x: x.paragraph, reverse=False)
-        print(len(text))
-        for photo in photo_record:
-            print(photo.paragraph)
         for i in range(len(text)):
             for photo in photo_record:
                 if photo.paragraph == i:

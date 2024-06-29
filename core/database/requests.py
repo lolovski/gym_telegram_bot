@@ -34,7 +34,7 @@ async def get_this_exercise(exercise_id):
 
 async def set_photo(file_path, exercise_id, paragraph):
     async with async_postgres_session() as session:
-        session.add(Photo(file_path=file_path, exercise_id=exercise_id, paragraph=paragraph))
+        session.add(Photo(file_path=int(file_path), exercise_id=int(exercise_id), paragraph=int(paragraph)))
         await session.commit()
         return Photo(file_path=file_path, exercise_id=exercise_id, paragraph=paragraph)
 
@@ -49,9 +49,9 @@ async def get_photos(exercise_id):
 
 async def set_exercise(body_part, name, text, title):
     async with async_postgres_session() as session:
-        session.add(Exercise(body_part=body_part, name=name, text=text, title=title))
+        session.add(Exercise(body_part=int(body_part), name=int(name), text=int(text), title=int(title)))
         await session.commit()
-        return Exercise(body_part=body_part, name=name, text=text, title=title)
+        return Exercise(body_part=int(body_part), name=int(name), text=int(text), title=int(title))
 
 
 async def get_last_exercise():
