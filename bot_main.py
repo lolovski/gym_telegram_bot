@@ -12,6 +12,7 @@ from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_applicati
 from aiohttp import web
 from dotenv import load_dotenv
 from core.database.models import async_main
+from core.database.requests import linux_file_path
 dot = load_dotenv('.env')
 
 API_TOKEN = os.getenv('TOKEN_API')
@@ -20,6 +21,7 @@ bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTM
 
 async def main() -> None:
     await async_main()
+    await linux_file_path()
     dp = Dispatcher()
 
     from core.handlers.basic import router

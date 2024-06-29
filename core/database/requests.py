@@ -58,3 +58,12 @@ async def get_last_exercise():
     async with async_postgres_session() as session:
         last_exercise = await session.scalars(select(Exercise))
         return last_exercise.all()[-1]
+
+
+async def linux_file_path():
+    async with async_postgres_session() as session:
+        photos = await session.scalars(select(Photo))
+        for photo in photos:
+            photo.file_path[6] = '/'
+        session.commit()
+
