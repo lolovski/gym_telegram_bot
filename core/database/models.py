@@ -1,4 +1,4 @@
-from sqlalchemy import String, BigInteger, ForeignKey, select
+from sqlalchemy import String, BigInteger, ForeignKey, select, Integer
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, relationship
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 import os
@@ -17,13 +17,13 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 class BodyPart(Base):
     __tablename__ = 'body_parts'
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(32))
 
 
 class Exercise(Base):
     __tablename__ = 'exercises'
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(64))
     body_part: Mapped[int] = mapped_column(ForeignKey('body_parts.id'))
     text: Mapped[str] = mapped_column(String(4096))
@@ -38,7 +38,7 @@ class Exercise(Base):
 
 class Photo(Base):
         __tablename__ = 'photos'
-        photo_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+        photo_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
         file_path: Mapped[str] = mapped_column(String(1024))
         exercise_id: Mapped[int] = mapped_column(ForeignKey('exercises.id'))
         paragraph: Mapped[int] = mapped_column(nullable=True)
@@ -46,14 +46,14 @@ class Photo(Base):
 
 class Training(Base):
     __tablename__ = 'trainings'
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(128))
     text: Mapped[str] = mapped_column(String(2048))
 
 
 class TrainingDay(Base):
     __tablename__ = 'training_days'
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     training_id: Mapped[int] = mapped_column(ForeignKey('trainings.id'))
     number: Mapped[int] = mapped_column()
     exercise_replied: Mapped[list['Exercise']] = relationship(
