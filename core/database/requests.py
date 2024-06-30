@@ -64,6 +64,6 @@ async def linux_file_path():
     async with async_postgres_session() as session:
         photos = await session.scalars(select(Photo))
         for photo in photos:
-            photo.file_path[6] = '/'
-        session.commit()
+            photo.file_path = photo.file_path.replace('\\', '/')
+        await session.commit()
 
