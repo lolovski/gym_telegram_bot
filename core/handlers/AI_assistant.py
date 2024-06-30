@@ -1,4 +1,3 @@
-from asyncio import WindowsSelectorEventLoopPolicy
 
 from aiogram import types, Bot, Dispatcher, F, Router
 from aiogram.filters import CommandStart, Command
@@ -47,7 +46,7 @@ async def ask_questions(message: types.Message, state: FSMContext):
             messages=messages,
             model="gpt-3.5-turbo",
         )
-        asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
+
         gpt_response = response.choices[0].message.content
         await message.answer(gpt_response)
         messages.append({"role": "assistant", "content": gpt_response})
