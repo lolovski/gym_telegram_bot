@@ -21,7 +21,6 @@ bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTM
 
 async def main() -> None:
     await async_main()
-    await linux_file_path()
     dp = Dispatcher()
 
     from core.handlers.basic import router
